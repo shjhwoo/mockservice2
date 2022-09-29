@@ -8,30 +8,12 @@ import (
 	"net/http"
 
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type authorizationcode struct {
 	AuthorizationCode       string `json:"authorizationcode"`
 }
-
-// type basicClient struct {
-// 	clientID     string
-// 	clientSecret string
-
-// 	client http.Client
-// }
-
-// func newBasicClient(clientID string, clientSecret string) *basicClient {
-// 	fmt.Println("11")
-// 	return &basicClient{
-// 		clientID:     clientID,
-// 		clientSecret: clientSecret,
-// 		client: http.Client{
-// 			Timeout: time.Second * 5,
-// 		},
-// 	}
-// }
-
 
 func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	fmt.Println(req.URL,"토큰은 여기서 받아용")
@@ -62,7 +44,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	var opts []oauth2.AuthCodeOption
 	// if isPKCE(req) {
 	// 	fmt.Println(codeVerifier)
-	// 	opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) //URa~GLE7o5p9~MF7a_5_P1XG9slFm7eywMCavZ~t8bvsbRB3nR4mGEnpyZmmvKgp
+	// 	opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) 
 	// }
 	//fmt.Println(opts,"문제의 원인. code_verifier를 못받아와..ㅠㅠ")
 
@@ -72,19 +54,43 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Println(token.AccessToken,token.RefreshToken,token)
+	fmt.Println("Access:",token.AccessToken,"Refresh:",token.RefreshToken,"Token:",token)
 
 	// //해당 토큰을 다시 IDP로 전송하여 사용자 정보를 받아온다.
-	// userinfo, err := http.NewRequest(http.MethodGet,"http://localhost:8080/user",nil)
 
-	// if err != nil {
-	// 	fmt.Fprint(rw, "사용자 정보조회 실패")
-	// }
+	var appClientConf = clientcredentials.Config{
+		ClientID:     "vegas",
+		ClientSecret: "foobar",
+		Scopes:       []string{"offline","openid"},
+		TokenURL:     "http://localhost:3846/oauth2/token",
+	}
 
-	// res, err := http.DefaultClient.Do(userinfo)
+	userinfoRequest, rwerr := http.NewRequest(http.MethodPost,"http://localhost:8080/resource",appClientConf) //클라이언트 정보전송
+
+	fmt.Println(userinfoRequest)
+
+	if rwerr != nil {
+		fmt.Fprint(rw, "요청객체 생성실패")
+	}
+
+	res, rerr := http.DefaultClient.Do(userinfoRequest)
+
+	if rerr != nil {
+		fmt.Fprint(rw, "사용자객체 받기 실패")
+	}
 
 	// //받아온 사용자 정보로 특정 서비스에서만 사용 가능한 토큰으로 재발급해서 클라이언트에게 쿠키로 전송한다.
-	// fmt.Println(res,"응답")
+	fmt.Println(res,"응답")
+
+	//jwt생성..
+
+	// http.SetCookie(rw, &http.Cookie{
+	// 	Name:   "vegas",
+	// 	Value:  "Bearer " + token.AccessToken,
+	// 	Domain: "localhost:3006",
+	// 	Path: "/",
+	// },
+	// )
 }
 
 
