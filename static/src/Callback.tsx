@@ -18,8 +18,8 @@ function Callback() {
         .then((res) => {
           //이제 서비스 전용으로만 쓸 수 있는 액세스 토큰을 받았음.
           window.localStorage.setItem("userid", res.data.userid);
-          // navigate("/", { replace: true });
-          // window.location.reload();
+          navigate("/", { replace: true });
+          window.location.reload();
           console.log("성공");
         })
         .catch((err) => {
