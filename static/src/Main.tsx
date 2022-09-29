@@ -4,8 +4,10 @@ import { useState } from "react";
 function Main() {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const handleLogin = () => {
+    console.log("확인");
     axios.get("http://localhost:4000/sso/login").then((response) => {
       window.location.replace(response.request.responseURL);
+      document.cookie = "isPKCE=true;";
     });
   };
   return (

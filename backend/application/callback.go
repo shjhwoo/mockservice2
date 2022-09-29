@@ -14,7 +14,27 @@ type authorizationcode struct {
 	AuthorizationCode       string `json:"authorizationcode"`
 }
 
+// type basicClient struct {
+// 	clientID     string
+// 	clientSecret string
+
+// 	client http.Client
+// }
+
+// func newBasicClient(clientID string, clientSecret string) *basicClient {
+// 	fmt.Println("11")
+// 	return &basicClient{
+// 		clientID:     clientID,
+// 		clientSecret: clientSecret,
+// 		client: http.Client{
+// 			Timeout: time.Second * 5,
+// 		},
+// 	}
+// }
+
+
 func callbackHandler (rw http.ResponseWriter, req *http.Request) {
+	fmt.Println(req.URL,"토큰은 여기서 받아용")
 	//0.클라이언트 설정
 	c := oauth2.Config{
 		ClientID: "vegas",
@@ -27,7 +47,8 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	//1. 프론트에서 보내준 authorization code 추출
+	//codeVerifier := resetPKCE(rw)
+
 	data, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
@@ -38,11 +59,16 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	var authcode authorizationcode
 	json.Unmarshal(data, &authcode)
 
-	//2. 코드를 가지고 토큰을 받아온다
 	var opts []oauth2.AuthCodeOption
+	// if isPKCE(req) {
+	// 	fmt.Println(codeVerifier)
+	// 	opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) //URa~GLE7o5p9~MF7a_5_P1XG9slFm7eywMCavZ~t8bvsbRB3nR4mGEnpyZmmvKgp
+	// }
+	//fmt.Println(opts,"문제의 원인. code_verifier를 못받아와..ㅠㅠ")
+
 	token, err := c.Exchange(context.Background(), authcode.AuthorizationCode, opts...)
 	if err != nil {
-		rw.Write([]byte(fmt.Sprintf(`<p>I tried to exchange the authorize code for an access token but it did not work but got error: %s</p>`, err.Error())))
+		fmt.Println("토큰 받는데 문제 생겼어ㅠㅠ",err.Error())
 		return
 	}
 
