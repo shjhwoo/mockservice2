@@ -62,7 +62,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		ClientID:     "vegas",
 		ClientSecret: "foobar",
 		Scopes:       []string{"openid","offline"},
-		TokenURL:     "http://localhost:3846/oauth2/token",
+		TokenURL:     "http://localhost:8080/oauth2/token",
 	}
 	
 	type requestBody struct {
