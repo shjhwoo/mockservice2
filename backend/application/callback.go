@@ -55,27 +55,29 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Println("Access:",token.AccessToken,"Refresh:",token.RefreshToken,"ID_Token:",token.Extra("id_token"))
+	//fmt.Println("Access:",token.AccessToken,"Refresh:",token.RefreshToken,"ID_Token:",token.Extra("id_token"))
 
 	//해당 토큰을 다시 IDP로 전송하여 사용자 정보를 받아온다.
 	var appClientInfo = clientcredentials.Config{
 		ClientID:     "vegas",
 		ClientSecret: "foobar",
-		Scopes:       []string{"offline","openid"},
+		Scopes:       []string{"openid","offline"},
 		TokenURL:     "http://localhost:3846/oauth2/token",
 	}
 	
 	type requestBody struct {
-		appClientConfig clientcredentials.Config
-		IDToken string
+		AppClientConfig clientcredentials.Config `json:"app_client_config"`
+		IDToken string `json:"id_token"`
 	}
 
 	var reqBody = requestBody{
-		appClientConfig: appClientInfo,
+		AppClientConfig: appClientInfo,
 		IDToken: fmt.Sprintf("%v", token.Extra("id_token")),
 	}
 
 	reqBodyJSON, err := json.Marshal(reqBody)
+
+	fmt.Println(reqBody,"***")
 
 	resp, err := http.Post("http://localhost:8080/resource?token="+token.AccessToken, "application/json", bytes.NewBuffer(reqBodyJSON))
 
