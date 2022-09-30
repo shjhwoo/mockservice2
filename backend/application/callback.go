@@ -67,19 +67,17 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	
 	type requestBody struct {
 		appClientConfig clientcredentials.Config
-		//AccessToken string //굳이 얘는 보내줄 필요가 있나?ㅠ. ID 토큰만으로 LDAP 서버 들어가서 조회하면 될 거 같은데?
 		IDToken string
 	}
 
 	var reqBody = requestBody{
 		appClientConfig: appClientInfo,
-		//AccessToken: token.AccessToken,
 		IDToken: fmt.Sprintf("%v", token.Extra("id_token")),
 	}
 
 	reqBodyJSON, err := json.Marshal(reqBody)
 
-	resp, err := http.Post("http://localhost:8080/resource", "application/json", bytes.NewBuffer(reqBodyJSON))
+	resp, err := http.Post("http://localhost:8080/resource?token="+token.AccessToken, "application/json", bytes.NewBuffer(reqBodyJSON))
 
 
 	if err != nil {
