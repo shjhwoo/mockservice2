@@ -1,6 +1,7 @@
 package application
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -54,35 +55,41 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Println("Access:",token.AccessToken,"Refresh:",token.RefreshToken,"Token:",token)
+	fmt.Println("Access:",token.AccessToken,"Refresh:",token.RefreshToken,"ID_Token:",token.Extra("id_token"))
 
-	// //해당 토큰을 다시 IDP로 전송하여 사용자 정보를 받아온다.
-
-	var appClientConf = clientcredentials.Config{
+	//해당 토큰을 다시 IDP로 전송하여 사용자 정보를 받아온다.
+	var appClientInfo = clientcredentials.Config{
 		ClientID:     "vegas",
 		ClientSecret: "foobar",
 		Scopes:       []string{"offline","openid"},
 		TokenURL:     "http://localhost:3846/oauth2/token",
 	}
-
-	userinfoRequest, rwerr := http.NewRequest(http.MethodPost,"http://localhost:8080/resource",appClientConf) //클라이언트 정보전송
-
-	fmt.Println(userinfoRequest)
-
-	if rwerr != nil {
-		fmt.Fprint(rw, "요청객체 생성실패")
+	
+	type requestBody struct {
+		appClientConfig clientcredentials.Config
+		//AccessToken string //굳이 얘는 보내줄 필요가 있나?ㅠ. ID 토큰만으로 LDAP 서버 들어가서 조회하면 될 거 같은데?
+		IDToken string
 	}
 
-	res, rerr := http.DefaultClient.Do(userinfoRequest)
+	var reqBody = requestBody{
+		appClientConfig: appClientInfo,
+		//AccessToken: token.AccessToken,
+		IDToken: fmt.Sprintf("%v", token.Extra("id_token")),
+	}
 
-	if rerr != nil {
+	reqBodyJSON, err := json.Marshal(reqBody)
+
+	resp, err := http.Post("http://localhost:8080/resource", "application/json", bytes.NewBuffer(reqBodyJSON))
+
+
+	if err != nil {
 		fmt.Fprint(rw, "사용자객체 받기 실패")
 	}
 
-	// //받아온 사용자 정보로 특정 서비스에서만 사용 가능한 토큰으로 재발급해서 클라이언트에게 쿠키로 전송한다.
-	fmt.Println(res,"응답")
+	//받아온 사용자 정보로 특정 서비스에서만 사용 가능한 토큰으로 재발급해서 클라이언트에게 쿠키로 전송한다.
+	fmt.Println(resp,"응답")
 
-	//jwt생성..
+	//apply jwt...
 
 	// http.SetCookie(rw, &http.Cookie{
 	// 	Name:   "vegas",
