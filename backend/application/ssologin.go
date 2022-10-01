@@ -24,7 +24,7 @@ func ssologinHandler(w http.ResponseWriter, r *http.Request){
 
 	// pkceCodeVerifier := generateCodeVerifier(64)
 	// fmt.Println(pkceCodeVerifier,"&")
-	// pkceCodeChallenge := generateCodeChallenge(pkceCodeVerifier)
+	// pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
 
 	//1.sso통합 로그인 페이지 생성
 	ssoLoginURL := c.AuthCodeURL("some-random-state-foobar")+"&nonce=some-random-nonce"

@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
+	"github.com/kataras/jwt"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -30,7 +32,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	//codeVerifier := resetPKCE(rw)
+	codeVerifier := resetPKCE(rw)
 
 	data, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -43,11 +45,11 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	json.Unmarshal(data, &authcode)
 
 	var opts []oauth2.AuthCodeOption
-	// if isPKCE(req) {
-	// 	fmt.Println(codeVerifier)
-	// 	opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) 
-	// }
-	//fmt.Println(opts,"문제의 원인. code_verifier를 못받아와..ㅠㅠ")
+	if isPKCE(req) {
+		fmt.Println(codeVerifier)
+		opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) 
+	}
+	fmt.Println(opts,"문제의 원인. code_verifier를 못받아와..ㅠㅠ")
 
 	token, err := c.Exchange(context.Background(), authcode.AuthorizationCode, opts...)
 	if err != nil {
@@ -75,7 +77,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		IDToken: fmt.Sprintf("%v", token.Extra("id_token")),
 	}
 
-	reqBodyJSON, err := json.Marshal(reqBody)
+	reqBodyJSON, _ := json.Marshal(reqBody)
 
 	fmt.Println(reqBody,"***")
 
@@ -112,15 +114,23 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	}
 	fmt.Println(userinfo,"사용자정보응답")
 
-	//apply jwt...
 	//jwt를 생성한다. 페이로드엔 사용자 식별정보와 간단한 부서, 소속정보를 담는다. 
+	var sharedKey = []byte("sercrethatmaycontainch@r$32chars") //환경변수처리.
+	serviceAccessToken, err := jwt.Sign(jwt.HS256, sharedKey, userinfo, jwt.MaxAge(15*time.Minute))
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("토큰 확인하세용",string(serviceAccessToken[:]))
 	http.SetCookie(rw, &http.Cookie{
-		Name:   "vegas",
-		Value:  "Bearer " + token.AccessToken,
+		Name:   "vegasAccessToken",
+		Value:  "Bearer " + string(serviceAccessToken[:]),
 		Domain: "localhost:3006",
 		Path: "/",
+		MaxAge: 15*60,
 	},
 	)
+	fmt.Fprint(rw,"베가스 액세스 토큰이 발급되었습니다:)")
 }
 
 
