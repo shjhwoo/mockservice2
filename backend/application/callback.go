@@ -80,24 +80,47 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	fmt.Println(reqBody,"***")
 
 	resp, err := http.Post("http://localhost:8080/resource?token="+token.AccessToken, "application/json", bytes.NewBuffer(reqBodyJSON))
-
-
 	if err != nil {
 		fmt.Fprint(rw, "사용자객체 받기 실패")
 	}
 
 	//받아온 사용자 정보로 특정 서비스에서만 사용 가능한 토큰으로 재발급해서 클라이언트에게 쿠키로 전송한다.
-	fmt.Println(resp,"응답")
+	type employeeInfo struct {
+		DN string `json:"dn"`
+		Uid string `json:"uid"`
+		Employeenumber string `json:"employeenumber"`
+		Cn string `json:"cn"`
+		Sn string `json:"sn"`
+		Mobile string `json:"mobile"`
+		// Departments []string 	`json:"departments"`
+		Hospitalcode string `json:"hospitalcode"`
+		// Services []string `json:"services"`
+	}
+
+	data, rerr := ioutil.ReadAll(resp.Body)
+	if rerr != nil {
+		fmt.Println("응답바디 읽어오기 실패!")
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	defer req.Body.Close()
+
+	var userinfo employeeInfo
+	if err := json.Unmarshal(data, &userinfo); err != nil {
+		fmt.Println("에러발생", err)
+	}
+	fmt.Println(userinfo,"사용자정보응답")
 
 	//apply jwt...
-
-	// http.SetCookie(rw, &http.Cookie{
-	// 	Name:   "vegas",
-	// 	Value:  "Bearer " + token.AccessToken,
-	// 	Domain: "localhost:3006",
-	// 	Path: "/",
-	// },
-	// )
+	//jwt를 생성한다. 페이로드엔 사용자 식별정보와 간단한 부서, 소속정보를 담는다. 
+	http.SetCookie(rw, &http.Cookie{
+		Name:   "vegas",
+		Value:  "Bearer " + token.AccessToken,
+		Domain: "localhost:3006",
+		Path: "/",
+	},
+	)
 }
 
 
