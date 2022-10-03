@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"math/big"
 	"net/http"
 	"time"
@@ -50,7 +51,9 @@ func generateCodeVerifier(n int) string {
 		b[i] = codeVerifierAllowedLetters[j.Int64()]
 	}
 
-	return string(b)
+	fmt.Println(string(b),"코드검증태그")
+	pkceCodeVerifier = string(b)
+	return pkceCodeVerifier
 }
 
 // generateCodeChallenge returns a standards compliant PKCE S(HA)256 code
@@ -61,6 +64,7 @@ func generateCodeChallenge(codeVerifier string) string {
 	s256.Write([]byte(codeVerifier))
 
 	// Then base64 encode the hash sum to create a code challenge...
+	pkceCodeChallenge = base64.RawURLEncoding.EncodeToString(s256.Sum(nil))
 	return base64.RawURLEncoding.EncodeToString(s256.Sum(nil))
 }
 

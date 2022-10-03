@@ -22,14 +22,14 @@ func ssologinHandler(w http.ResponseWriter, r *http.Request){
 		},
 	}
 
-	// pkceCodeVerifier := generateCodeVerifier(64)
-	// fmt.Println(pkceCodeVerifier,"&")
-	// pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
+	pkceCodeVerifier := generateCodeVerifier(64)
+	pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
 
 	//1.sso통합 로그인 페이지 생성
-	ssoLoginURL := c.AuthCodeURL("some-random-state-foobar")+"&nonce=some-random-nonce"
-	//ssoLoginURL := c.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256"
+	//ssoLoginURL := c.AuthCodeURL("some-random-state-foobar")+"&nonce=some-random-nonce"
+	ssoLoginURL := c.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256"
 
+	fmt.Println(ssoLoginURL,"요청url")
 	//2.사용자 리디렉션
 	http.Redirect(w, r, ssoLoginURL, http.StatusSeeOther)
 }

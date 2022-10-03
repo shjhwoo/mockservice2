@@ -31,7 +31,6 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 			AuthURL:  "http://localhost:8080/oauth2/auth",
 		},
 	}
-
 	codeVerifier := resetPKCE(rw)
 
 	data, err := ioutil.ReadAll(req.Body)
@@ -46,10 +45,8 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 
 	var opts []oauth2.AuthCodeOption
 	if isPKCE(req) {
-		fmt.Println(codeVerifier)
 		opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) 
 	}
-	fmt.Println(opts,"문제의 원인. code_verifier를 못받아와..ㅠㅠ")
 
 	token, err := c.Exchange(context.Background(), authcode.AuthorizationCode, opts...)
 	if err != nil {
@@ -57,7 +54,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//fmt.Println("Access:",token.AccessToken,"Refresh:",token.RefreshToken,"ID_Token:",token.Extra("id_token"))
+	fmt.Println("Access:",token.AccessToken,"Refresh:",token.RefreshToken,"ID_Token:",token.Extra("id_token"))
 
 	//해당 토큰을 다시 IDP로 전송하여 사용자 정보를 받아온다.
 	var appClientInfo = clientcredentials.Config{
@@ -79,7 +76,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 
 	reqBodyJSON, _ := json.Marshal(reqBody)
 
-	fmt.Println(reqBody,"***")
+	//fmt.Println(reqBody,"***")
 
 	resp, err := http.Post("http://localhost:8080/resource?token="+token.AccessToken, "application/json", bytes.NewBuffer(reqBodyJSON))
 	if err != nil {
@@ -101,7 +98,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 
 	data, rerr := ioutil.ReadAll(resp.Body)
 	if rerr != nil {
-		fmt.Println("응답바디 읽어오기 실패!")
+		//fmt.Println("응답바디 읽어오기 실패!")
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -112,7 +109,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 	if err := json.Unmarshal(data, &userinfo); err != nil {
 		fmt.Println("에러발생", err)
 	}
-	fmt.Println(userinfo,"사용자정보응답")
+	//fmt.Println(userinfo,"사용자정보응답")
 
 	//jwt를 생성한다. 페이로드엔 사용자 식별정보와 간단한 부서, 소속정보를 담는다. 
 	var sharedKey = []byte("sercrethatmaycontainch@r$32chars") //환경변수처리.
