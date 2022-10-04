@@ -61,7 +61,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		ClientID:     "vegas",
 		ClientSecret: "foobar",
 		Scopes:       []string{"openid","offline"},
-		TokenURL:     "http://localhost:8080/oauth2/token",
+		TokenURL:     "http://localhost:8080/api/oauth2/token",
 	}
 	
 	type requestBody struct {
@@ -78,7 +78,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 
 	//fmt.Println(reqBody,"***")
 
-	resp, err := http.Post("http://localhost:8080/resource?token="+token.AccessToken, "application/json", bytes.NewBuffer(reqBodyJSON))
+	resp, err := http.Post("http://localhost:8080/api/resource?token="+token.AccessToken, "application/json", bytes.NewBuffer(reqBodyJSON))
 	if err != nil {
 		fmt.Fprint(rw, "사용자객체 받기 실패")
 	}
