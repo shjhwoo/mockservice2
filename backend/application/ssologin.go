@@ -18,7 +18,7 @@ func ssologinHandler(w http.ResponseWriter, r *http.Request){
 		Scopes: []string{"openid", "offline"},
 		Endpoint: oauth2.Endpoint{
 			TokenURL: "http://localhost:8080/api/oauth2/token",
-			AuthURL:  "http://localhost:8080/api/oauth2/auth",
+			AuthURL:  "http://localhost:8080/",
 		},
 	}
 
@@ -26,7 +26,6 @@ func ssologinHandler(w http.ResponseWriter, r *http.Request){
 	pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
 
 	//1.sso통합 로그인 페이지 생성
-	//ssoLoginURL := c.AuthCodeURL("some-random-state-foobar")+"&nonce=some-random-nonce"
 	ssoLoginURL := c.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256"
 
 	fmt.Println(ssoLoginURL,"요청url")

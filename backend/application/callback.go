@@ -27,8 +27,8 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		RedirectURL: "http://localhost:3006/callback",
 		Scopes: []string{"openid", "offline"},
 		Endpoint: oauth2.Endpoint{
-			TokenURL: "http://localhost:8080/oauth2/token",
-			AuthURL:  "http://localhost:8080/oauth2/auth",
+			TokenURL: "http://localhost:8080/api/oauth2/token",
+			AuthURL:  "http://localhost:8080/",
 		},
 	}
 	codeVerifier := resetPKCE(rw)
