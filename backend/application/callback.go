@@ -123,10 +123,10 @@ func callbackHandler (c * gin.Context) {
 	c.SetCookie("vegasAccessToken", string(serviceAccessToken[:]), 10*60, "/", "localhost",false, false)
 	//c.SetSameSite(http.SameSiteNoneMode)
 	
+	//로컬스토리지에 저장할 데이터임
 	c.JSON(http.StatusCreated, gin.H{
 		"userid": userinfo.Uid,
 	})
-	return
 }
 
 

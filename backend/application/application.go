@@ -19,7 +19,7 @@ func SetupRouter() *gin.Engine {
 	))
 
 	router.GET("/", healthCheck)
-	router.POST("/checkcookie", checkcookie)
+	router.POST("/checkcookie", checksso)
 	router.GET("/sso/login", ssologinHandler)
 	router.GET("/callback", callbackHandler)
 	router.POST("/callback", callbackHandler)

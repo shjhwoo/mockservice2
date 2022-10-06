@@ -17,9 +17,9 @@ function Callback() {
         )
         .then((res) => {
           //이제 서비스 전용으로만 쓸 수 있는 액세스 토큰을 받았음.
-          console.log(res.data, "답답해");
+          //나중에 로컬스토리지 정보는 해시시키고, ldap에 저장하기!, 키 이름도 알아보기 힘들게 쓸것.
           window.localStorage.setItem("userid", res.data.userid);
-          navigate("/", { replace: true });
+          navigate("/service", { replace: true });
           window.location.reload();
           console.log("성공");
         })
