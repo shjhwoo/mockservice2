@@ -120,7 +120,8 @@ func callbackHandler (c * gin.Context) {
 	}
 
 	fmt.Println("베가스토큰 확인하세용",string(serviceAccessToken[:]))
-	c.SetCookie("vegasAccessToken", "Bearer " + string(serviceAccessToken[:]), 10*60, "/", "localhost", false, true)
+	c.SetCookie("vegasAccessToken", string(serviceAccessToken[:]), 10*60, "/", "localhost",false, false)
+	//c.SetSameSite(http.SameSiteNoneMode)
 	
 	c.JSON(http.StatusCreated, gin.H{
 		"userid": userinfo.Uid,
