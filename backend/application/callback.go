@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/kataras/jwt"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -18,10 +19,12 @@ type authorizationcode struct {
 	AuthorizationCode       string `json:"authorizationcode"`
 }
 
-func callbackHandler (rw http.ResponseWriter, req *http.Request) {
+func callbackHandler (c * gin.Context) {
+	var rw http.ResponseWriter = c.Writer
+	var req *http.Request = c.Request
 	fmt.Println(req.URL,"토큰은 여기서 받아용")
 	//0.클라이언트 설정
-	c := oauth2.Config{
+	con := oauth2.Config{
 		ClientID: "vegas",
 		ClientSecret: "foobar",
 		RedirectURL: "http://localhost:3006/callback",
@@ -48,7 +51,7 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) 
 	}
 
-	token, err := c.Exchange(context.Background(), authcode.AuthorizationCode, opts...)
+	token, err := con.Exchange(context.Background(), authcode.AuthorizationCode, opts...)
 	if err != nil {
 		fmt.Println("토큰 받는데 문제 생겼어ㅠㅠ",err.Error())
 		return
@@ -76,8 +79,6 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 
 	reqBodyJSON, _ := json.Marshal(reqBody)
 
-	//fmt.Println(reqBody,"***")
-
 	resp, err := http.Post("http://localhost:8080/api/resource?token="+token.AccessToken, "application/json", bytes.NewBuffer(reqBodyJSON))
 	if err != nil {
 		fmt.Fprint(rw, "사용자객체 받기 실패")
@@ -91,9 +92,9 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		Cn string `json:"cn"`
 		Sn string `json:"sn"`
 		Mobile string `json:"mobile"`
-		// Departments []string 	`json:"departments"`
+		Departments []string 	`json:"departments"`
 		Hospitalcode string `json:"hospitalcode"`
-		// Services []string `json:"services"`
+		Services []string `json:"services"`
 	}
 
 	data, rerr := ioutil.ReadAll(resp.Body)
@@ -118,16 +119,13 @@ func callbackHandler (rw http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	fmt.Println("토큰 확인하세용",string(serviceAccessToken[:]))
-	http.SetCookie(rw, &http.Cookie{
-		Name:   "vegasAccessToken",
-		Value:  "Bearer " + string(serviceAccessToken[:]),
-		Domain: "localhost:3006",
-		Path: "/",
-		MaxAge: 15*60,
-	},
-	)
-	fmt.Fprint(rw,"베가스 액세스 토큰이 발급되었습니다:)")
+	fmt.Println("베가스토큰 확인하세용",string(serviceAccessToken[:]))
+	c.SetCookie("vegasAccessToken", "Bearer " + string(serviceAccessToken[:]), 10*60, "/", "localhost", false, true)
+	
+	c.JSON(http.StatusCreated, gin.H{
+		"userid": userinfo.Uid,
+	})
+	return
 }
 
 

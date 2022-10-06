@@ -1,19 +1,18 @@
 package application
 
 import (
-	"net/http"
-
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func NewHttpHandler() http.Handler {
-	mux := mux.NewRouter()
-	mux.HandleFunc("/", healthCheck).Methods("GET")
-	mux.HandleFunc("/sso/login", ssologinHandler).Methods("GET")
-	mux.HandleFunc("/callback", callbackHandler)
-	mux.HandleFunc("/admin", getadminservice).Methods("GET")
-	mux.HandleFunc("/all", getnormalservice).Methods("GET")
-	return mux
+func SetupRouter() *gin.Engine {
+	router := gin.Default()
+	router.GET("/", healthCheck)
+	router.GET("/sso/login", ssologinHandler)
+	router.GET("/callback", callbackHandler)
+	router.POST("/callback", callbackHandler)
+	router.GET("/admin", getadminservice)
+	router.GET("/all", getnormalservice)
+	return router
 }
 
 

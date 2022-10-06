@@ -1,7 +1,11 @@
 package application
 
-import "net/http"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func getnormalservice(w http.ResponseWriter, r *http.Request) {
+func getnormalservice(c * gin.Context) {
+	// var rw http.ResponseWriter = c.Writer
+	// var req *http.Request = c.Request
 
 }

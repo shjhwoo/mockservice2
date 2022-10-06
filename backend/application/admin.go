@@ -1,7 +1,11 @@
 package application
 
-import "net/http"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func getadminservice(w http.ResponseWriter, r *http.Request) {
+func getadminservice(c * gin.Context) {
+	// var rw http.ResponseWriter = c.Writer
+	// var req *http.Request = c.Request
 
 }

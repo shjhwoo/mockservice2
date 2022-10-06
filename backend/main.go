@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"mock/application"
 	"net/http"
@@ -17,13 +16,12 @@ var corsHandler = cors.New(cors.Options{
 	Debug:            true,
 })
 
-var handler = corsHandler.Handler(application.NewHttpHandler())
+var handler = corsHandler.Handler(application.SetupRouter())
 
 var port = "4000"
 
 func main () {
 	err := http.ListenAndServe(":"+port, handler)
-	fmt.Println("Please open your webbrowser at http://localhost:" + port)
 	if err != nil {
 		log.Fatal(err)
 	}

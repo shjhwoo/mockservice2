@@ -17,6 +17,7 @@ function Callback() {
         )
         .then((res) => {
           //이제 서비스 전용으로만 쓸 수 있는 액세스 토큰을 받았음.
+          console.log(res.data, "답답해");
           window.localStorage.setItem("userid", res.data.userid);
           navigate("/", { replace: true });
           window.location.reload();

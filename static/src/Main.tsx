@@ -1,8 +1,6 @@
 import axios from "axios";
-import { useState } from "react";
 
 function Main() {
-  const [isLogin, setIsLogin] = useState<boolean>(false);
   const handleLogin = () => {
     console.log("확인");
     axios.get("http://localhost:4000/sso/login").then((response) => {
@@ -10,12 +8,14 @@ function Main() {
       document.cookie = "isPKCE=true;";
     });
   };
+  console.log(localStorage.getItem("userid") === "", "확인");
   return (
     <div>
-      {isLogin ? (
-        "로그인한 사람만 볼수있지롱~"
-      ) : (
+      {!!localStorage.getItem("userid") === false ||
+      localStorage.getItem("userid") === undefined ? (
         <button onClick={handleLogin}>통합로그인 하러가기</button>
+      ) : (
+        "로그인한 사람만 볼수있지롱~"
       )}
     </div>
   );
