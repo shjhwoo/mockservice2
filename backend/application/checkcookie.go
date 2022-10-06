@@ -46,7 +46,9 @@ func checkcookie(c *gin.Context) {
 		fmt.Println(err,"제이쓴 파싱에 실패했습니다")
 	}
 
-	if vegasCookie.Cookie == "" {
+	fmt.Println(vegasCookie.Cookie,"쿠키내용확인")
+
+	if vegasCookie.Cookie == "" || vegasCookie.Cookie == "isPKCE=true" {
 		fmt.Println(err,"베가스 쿠키가 없습니다")
 		//그러면 sso 쿠키가 살아있는지 확인해야지...
 		con := oauth2.Config{
