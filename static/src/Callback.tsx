@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { slientRefresh } from "./Timer";
 
 function Callback() {
   const navigate = useNavigate();
@@ -16,12 +17,13 @@ function Callback() {
           { withCredentials: true }
         )
         .then((res) => {
-          //이제 서비스 전용으로만 쓸 수 있는 액세스 토큰을 받았음.
-          //나중에 로컬스토리지 정보는 해시시키고, ldap에 저장하기!, 키 이름도 알아보기 힘들게 쓸것.
+          console.log(
+            "서비스에서 사용할 수 있는 액세스 토큰이 발급되었습니다."
+          );
           window.localStorage.setItem("userid", res.data.userid);
+          //쿠키 유효시간 타이머 실행시키도록 할 것.
+          //slientRefresh();
           navigate("/service", { replace: true });
-          window.location.reload();
-          console.log("성공");
         })
         .catch((err) => {
           console.log("catch", err);
