@@ -53,7 +53,7 @@ func logoutHandler(c *gin.Context) {
 			return
 		}
 		rw.WriteHeader(http.StatusBadRequest)
-		fmt.Println("아무튼 잘못된 요청")
+		fmt.Println("아무튼 잘못된 요청",err)
 		return
 	}
 
@@ -62,8 +62,8 @@ func logoutHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("받은 쿠키는 유효합니다. 쿠키를 파괴합니다")
-	c.SetCookie("vegasAccessToken","",0,"/","localhost",false,false)
+	fmt.Println("받은 쿠키는 유효합니다. 이제 진짜로 SSO쿠키를 파괴할 수 있는 url을 제공합니다")
+	//c.SetCookie("vegasAccessToken","",0,"/","localhost",false,false)
 
 	//그런 다음에 SSO 세션을 체크하는 url을 사용자에게 되돌려준다.
 	//sso 쿠키가 살아있는지 확인해야지...

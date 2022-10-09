@@ -114,13 +114,13 @@ func callbackHandler (c * gin.Context) {
 
 	//jwt를 생성한다. 페이로드엔 사용자 식별정보와 간단한 부서, 소속정보를 담는다. 
 	var sharedKey = []byte("sercrethatmaycontainch@r$32chars") //환경변수처리.
-	serviceAccessToken, err := jwt.Sign(jwt.HS256, sharedKey, userinfo, jwt.MaxAge(2*time.Minute))
+	serviceAccessToken, err := jwt.Sign(jwt.HS256, sharedKey, userinfo, jwt.MaxAge(15*time.Minute))
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println("베가스토큰 확인하세용",string(serviceAccessToken[:]))
-	c.SetCookie("vegasAccessToken", string(serviceAccessToken[:]), 2*60, "/", "localhost",false, false)
+	c.SetCookie("vegasAccessToken", string(serviceAccessToken[:]), 15*60, "/", "localhost",false, false)
 	//c.SetSameSite(http.SameSiteNoneMode)
 	
 	//로컬스토리지에 저장할 데이터임
