@@ -12,7 +12,10 @@ function Service() {
       .then((response) => {
         console.log(response, "로그아웃 성공 시 돌아오는 응답입니다");
         document.cookie = "isPKCE=true";
-        console.log("SSO 쿠키를 파괴하러 갑니다...");
+        console.log(
+          "SSO 쿠키를 파괴하러 갑니다...",
+          response.data.redirectionURL
+        );
         window.location.assign(response.data.redirectionURL);
       });
   };

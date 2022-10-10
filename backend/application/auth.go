@@ -85,9 +85,4 @@ func checkAcctoken(c *gin.Context){
 
 	fmt.Println("유효한 토큰입니다. api에 요청을 보냅니다...")
 	c.Next()
-
-	// cookie, err := req.Cookie("vegasAccessToken")
-	// if err != nil {
-	// 	fmt.Println("쿠키를 찾을 수 없습니다. SSO 쿠키가 있는지 확인하러 갑니다.")
-	// }
 }

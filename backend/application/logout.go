@@ -28,15 +28,23 @@ func logoutHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(cookie.Cookie,"쿠키 값 확인하세요")
+	fmt.Println(strings.Split(cookie.Cookie,"; "),"쿠키 값 확인하세요")
 
-	cookiename := strings.Split(cookie.Cookie, "=")[0]
-	if cookiename != "vegasAccessToken" {
-		fmt.Println("베가스 서비스 쿠키가 아닙니다.")
-		return
+	// cookiename := strings.Split(cookie.Cookie, "=")[0]
+	// if cookiename != "vegasAccessToken" {
+	// 	fmt.Println("베가스 서비스 쿠키가 아닙니다.")
+	// 	return
+	// }
+
+	var tknStr string
+
+	for _, cookieValue := range strings.Split(cookie.Cookie,"; ") {
+		if strings.Split(cookieValue,"=")[0] == "vegasAccessToken" {
+			tknStr = strings.Split(cookieValue,"=")[1]
+		}
 	}
 
-	tknStr := strings.Split(cookie.Cookie, "=")[1]
+	//tknStr := strings.Split(cookie.Cookie, "=")[1]
 
 	fmt.Println("유효한 토큰인지 검증 시작합니다...")
 	claims := &Claims{}
@@ -63,7 +71,6 @@ func logoutHandler(c *gin.Context) {
 	}
 
 	fmt.Println("받은 쿠키는 유효합니다. 이제 진짜로 SSO쿠키를 파괴할 수 있는 url을 제공합니다")
-	//c.SetCookie("vegasAccessToken","",0,"/","localhost",false,false)
 
 	//그런 다음에 SSO 세션을 체크하는 url을 사용자에게 되돌려준다.
 	//sso 쿠키가 살아있는지 확인해야지...
