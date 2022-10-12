@@ -3,6 +3,7 @@ import "./App.css";
 import Callback from "./Callback";
 import Main from "./Main";
 import Service from "./Service";
+import SingleLogOut from "./SingleLogOut"
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/callback" element={<Callback />} />
         <Route path="/service" element={<Service />} />
+        <Route path="/slo" element={<SingleLogOut />} />
       </Routes>
     </Router>
   );
