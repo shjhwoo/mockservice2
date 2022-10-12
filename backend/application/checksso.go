@@ -22,9 +22,6 @@ type Claims struct {
 }
 
 func checksso(c *gin.Context) {
-	// var rw http.ResponseWriter = c.Writer
-	// var req *http.Request = c.Request
-
 	//sso 쿠키가 살아있는지 확인해야지...
 	con := oauth2.Config{
 		ClientID: "vegas",
@@ -44,9 +41,9 @@ func checksso(c *gin.Context) {
 	ssoLoginURL := con.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256"
 	//이 주소를 다시 프론트로 보내서 리디렉션 시켜줌
 	c.JSON(http.StatusOK, gin.H{
+		"message": "SSO 쿠키를 확인합니다",
 		"redirectionURL": ssoLoginURL,
 	})
-	
 }
 
 	//아래는 배포 환경에서 쓸 코드임.

@@ -55,14 +55,15 @@ class Api {
   }
 
   //서비스 토큰의 유효성을 확인하는 요청
-  async checkServiceToken() {
+  async checkServiceToken(accessToken: string, refreshToken: string) {
     try {
       const option = {
         method: "POST",
         url: "http://localhost:4000/checkservicetkn",
-        data: {},
+        data: { accessToken, refreshToken },
+        headers: { withCredentials: true }, //액세스 토큰과 리프레시 토큰 모두 한꺼번에 보내서 검증한다.
       };
-      const response = await this.requestWithCookies(option);
+      const response = await axios(option);
       return response;
     } catch (e) {
       console.error(e);
