@@ -88,10 +88,10 @@ func logoutHandler(c *gin.Context) {
 	pkceCodeVerifier := generateCodeVerifier(64)
 	pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
 
-	//1.sso통합 로그인 페이지 생성
-	ssoLoginURL := con.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256&logout=true"
+	//1.로그아웃 요청주소
+	ssoLogoutURL := con.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256&logout=true"
 	//이 주소를 다시 프론트로 보내서 리디렉션 시켜줌
 	c.JSON(http.StatusOK, gin.H{
-		"redirectionURL": ssoLoginURL,
+		"redirectionURL": ssoLogoutURL,
 	})
 }
