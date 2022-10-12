@@ -26,6 +26,7 @@ func SetupRouter() *gin.Engine {
 	router.POST("/api/chart", checkAcctoken, getchartservice)
 	router.POST("/logout", logoutHandler)
 	router.POST("/slo", sloHandler)
+	router.POST("/checkservicetkn", tokenCheckHandler)
 	// 미들웨어 추가
 	//acctoken과 같이 들어온 요청이 유효한지를 판단하는 미들웨어 작성해야함
 	router.GET("/all", getnormalservice)

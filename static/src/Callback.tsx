@@ -1,14 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { slientRefresh } from "./Timer";
 
-function Callback() {
+interface Props {
+  accessToken: string;
+  refreshToken: string;
+  setAccessToken: Dispatch<SetStateAction<string>>;
+  setRefreshToken: Dispatch<SetStateAction<string>>;
+}
+
+function Callback(props: Props) {
   const navigate = useNavigate();
   useEffect(() => {
     const url = new URL(window.location.href);
     const authorizationCode = url.searchParams.get("code");
-    console.log(authorizationCode);
+    console.log(authorizationCode, props);
     if (authorizationCode) {
       axios
         .post(
@@ -18,18 +24,25 @@ function Callback() {
         )
         .then((res) => {
           console.log(
-            "서비스에서 사용할 수 있는 액세스 토큰이 발급되었습니다."
+            "서비스에서 사용할 수 있는 토큰이 발급되었습니다.",
+            res.data
           );
+          props.setAccessToken(res.data.accessToken);
+          props.setRefreshToken(
+            document.cookie
+              .split(" ")
+              .filter((item) => item.includes("vegasRefreshToken"))[0]
+              .split("=")[1]
+          );
+          console.log(authorizationCode, props, "22");
           window.localStorage.setItem("userid", res.data.userid);
-          //쿠키 유효시간 타이머 실행시키도록 할 것.
-          //slientRefresh();
-          navigate("/service", { replace: true });
+          //navigate("/service", { replace: true });
         })
         .catch((err) => {
           console.log("catch", err);
         });
     }
-  }, [navigate]);
+  }, [props.accessToken, props.refreshToken]);
   return (
     <>
       <div>서비스 리디렉션 중입니다...</div>

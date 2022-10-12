@@ -90,8 +90,9 @@ func logoutHandler(c *gin.Context) {
 
 	//로그아웃 요청
 	ssoLoginURL := con.AuthCodeURL("nuclear-tuna-plays-piano") + "&nonce=some-random-nonce&code_challenge=" + pkceCodeChallenge + "&code_challenge_method=S256&logout=true"
+
 	//이 주소를 다시 프론트로 보내서 리디렉션 시켜줌
 	c.JSON(http.StatusOK, gin.H{
-		"redirectionURL": ssoLoginURL,
+		"redirectionURL": ssoLogoutURL,
 	})
 }
