@@ -20,8 +20,11 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Main token={token} />} />
-        <Route path="/callback" element={<Callback token={token} setToken={setToken} />} />
-        <Route path="/service" element={<Service />} />
+        <Route
+          path="/callback"
+          element={<Callback token={token} setToken={setToken} />}
+        />
+        <Route path="/service" element={<Service token={token} />} />
         <Route path="/slo" element={<SingleLogOut />} />
       </Routes>
     </Router>

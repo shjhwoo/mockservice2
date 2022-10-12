@@ -1,4 +1,4 @@
-import { useEffect, Dispatch, SetStateAction, useState } from "react";
+import { useEffect, Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -12,40 +12,41 @@ interface Props {
   setToken: Dispatch<SetStateAction<token>>;
 }
 
-const fetchToken = async () => {
-  try {
-    const url = new URL(window.location.href);
-    const authorizationCode = url.searchParams.get("code");
-    if (authorizationCode) {
-      const resp = await axios.post(
-        "http://localhost:4000/callback",
-        { authorizationCode },
-        { withCredentials: true }
-      );
-      const accessToken = resp.data.accessToken;
-      const refreshToken = document.cookie
-        .split(" ")
-        .filter((item) => item.includes("vegasRefreshToken"))[0]
-        .split("=")[1];
-      return { accessToken, refreshToken };
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
+axios.defaults.withCredentials = true;
 
 function Callback(props: Props) {
-  const [tkn, setTkn] = useState<token>({ accessToken: "", refreshToken: "" });
   const navigate = useNavigate();
   useEffect(() => {
-    const getToken = async () => {
-      const token = await fetchToken();
-      // if (token !== undefined) props.setToken(token);
-      if (token !== undefined) setTkn(token);
-    };
     getToken();
     navigate("/service", { replace: true });
   }, []);
+  const getToken = () => {
+    axios.defaults.withCredentials = true;
+    const url = new URL(window.location.href);
+    const authorizationCode = url.searchParams.get("code");
+    if (authorizationCode) {
+      axios
+        .post(
+          "http://localhost:4000/callback",
+          { authorizationCode },
+          { headers: { withCredentials: true } }
+        )
+        .then((res) => {
+          const accessToken = res.data.accessToken;
+          const refreshToken = document.cookie
+            .split(" ")
+            .filter((cookie) => cookie.includes("vegas"))[0];
+          console.log(accessToken, refreshToken);
+          props.setToken({ accessToken, refreshToken });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  };
+  useEffect(() => {
+    console.log(props.token);
+  }, [props.token]);
   return (
     <>
       <div>서비스 리디렉션 중입니다...</div>
@@ -54,24 +55,3 @@ function Callback(props: Props) {
 }
 
 export default Callback;
-
-// try {
-//   const url = new URL(window.location.href);
-//   const authorizationCode = url.searchParams.get("code");
-//   if (authorizationCode) {
-//     const resp = await axios.post(
-//       "http://localhost:4000/callback",
-//       { authorizationCode },
-//       { withCredentials: true }
-//     );
-//     const accessToken = resp.data.accessToken;
-//     const refreshToken = document.cookie
-//       .split(" ")
-//       .filter((item) => item.includes("vegasRefreshToken"))[0]
-//       .split("=")[1];
-//     props.setToken({ accessToken, refreshToken });
-//     window.localStorage.setItem("userid", resp.data.userid);
-//   }
-// } catch (e) {
-//   console.error(e);
-// }
