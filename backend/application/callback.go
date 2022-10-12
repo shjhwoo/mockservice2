@@ -120,13 +120,13 @@ func callbackHandler (c * gin.Context) {
 	}
 
 	fmt.Println("베가스토큰 확인하세용",string(serviceAccessToken[:]))
-	c.SetCookie("vegasAccessToken", string(serviceAccessToken[:]), 10*60, "/", "localhost",false, false)
+	c.SetCookie("vegasAccessToken", string(serviceAccessToken[:]), 15*60, "/", "localhost",false, false)
 	//c.SetSameSite(http.SameSiteNoneMode)
 	
+	//로컬스토리지에 저장할 데이터임
 	c.JSON(http.StatusCreated, gin.H{
 		"userid": userinfo.Uid,
 	})
-	return
 }
 
 

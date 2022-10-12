@@ -16,12 +16,11 @@ function Callback() {
           { withCredentials: true }
         )
         .then((res) => {
-          //이제 서비스 전용으로만 쓸 수 있는 액세스 토큰을 받았음.
-          console.log(res.data, "답답해");
+          console.log(
+            "서비스에서 사용할 수 있는 액세스 토큰이 발급되었습니다."
+          );
           window.localStorage.setItem("userid", res.data.userid);
-          navigate("/", { replace: true });
-          window.location.reload();
-          console.log("성공");
+          navigate("/service", { replace: true });
         })
         .catch((err) => {
           console.log("catch", err);

@@ -12,30 +12,16 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type Claims struct {
-	DN string `json:"dn"`
-	Uid string `json:"uid"`
-	Employeenumber string `json:"employeenumber"`
-	Cn string `json:"cn"`
-	Sn string `json:"sn"`
-	Mobile string `json:"mobile"`
-	Departments []string 	`json:"departments"`
-	Hospitalcode string `json:"hospitalcode"`
-	Services []string `json:"services"`
-	jwt.StandardClaims
-}
-
 type cookie struct {
 	Cookie string `json:"cookie"`
 }
 
-var jwtKey = []byte("sercrethatmaycontainch@r$32chars")
-
-func checkcookie(c *gin.Context) {
+//acctoken과 같이 들어온 요청이 유효한지를 판단하는 미들웨어
+func checkAcctoken(c *gin.Context){
+	fmt.Println("미들웨어: 베가스 쿠키가 유효한지 검증합니다")
 	var rw http.ResponseWriter = c.Writer
 	var req *http.Request = c.Request
 
-	//일단 지금 서로 다른 도메인에서 쿠키 전달이 안되가지고 이래뒀어요. 배포할때 바꿀거에요ㅠㅠ
 	data, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		fmt.Println("요청 바디 자체를 못 읽었음")
@@ -46,11 +32,8 @@ func checkcookie(c *gin.Context) {
 		fmt.Println(err,"제이쓴 파싱에 실패했습니다")
 	}
 
-	fmt.Println(vegasCookie.Cookie,"쿠키내용확인")
-
 	if vegasCookie.Cookie == "" || vegasCookie.Cookie == "isPKCE=true" {
 		fmt.Println(err,"베가스 쿠키가 없습니다")
-		//그러면 sso 쿠키가 살아있는지 확인해야지...
 		con := oauth2.Config{
 			ClientID: "vegas",
 			ClientSecret: "foobar",
@@ -64,40 +47,21 @@ func checkcookie(c *gin.Context) {
 
 		pkceCodeVerifier := generateCodeVerifier(64)
 		pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
-
 		//1.sso통합 로그인 페이지 생성
 		ssoLoginURL := con.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256"
 		//이 주소를 다시 프론트로 보내서 리디렉션 시켜줌
+		fmt.Println(err,"SSO 쿠키가 있는지 확인하러 갑니다...")
 		c.JSON(http.StatusOK, gin.H{
 			"redirectionURL": ssoLoginURL,
 		})
 		return
 	}
 
-	//아래는 배포 환경에서 쓸 코드임.
-
-	// cookie, err := req.Cookie("vegasAccessToken")
-	// if err != nil {
-	// 	fmt.Println("서비스 쿠키가 없어",err)
-	// 	c.JSON(http.StatusUnauthorized, gin.H{
-	// 		"message": "no service cookie",
-	// 	})
-	// 	return
-	// 	//sso 쿠키가 있는지 자동으로 확인을 해서 재발급 시도를 하도록 하자
-	// 	//sso 쿠키 확인하는 곳으로 사용자 이동시키기
-	// 	//withCredentials헤더 설정. 
-	// 	//resp, err := http.Get("http://localhost:8080/api/oauth2/auth")
-	// 	//sso 쿠키마저도 없음
-	// 	//sso 쿠키 살아있음
-
-	// }
-	
+	//쿠키가 존재. jwt 파싱해서 유효한 토큰인지를 확인
+	fmt.Println("액세스 토큰을 파싱하여 검증합니다")
+	var jwtKey = []byte("sercrethatmaycontainch@r$32chars")
 	tknStr := strings.Split(vegasCookie.Cookie,"=")[1]
-	// tknStr := cookie.Value
-	fmt.Println(tknStr)
-
 	claims := &Claims{}
-
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
@@ -105,22 +69,20 @@ func checkcookie(c *gin.Context) {
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
 			rw.WriteHeader(http.StatusUnauthorized)
-			fmt.Println("권한 없는 이상한 토큰")
+			fmt.Println("권한 없는 이상한 토큰입니다.")
 			return
 		}
 		rw.WriteHeader(http.StatusBadRequest)
-		fmt.Println("아무튼 잘못된 요청")
+		fmt.Println("아무튼 잘못된 요청입니다.")
 		return
 	}
 
 	if !tkn.Valid {
 		rw.WriteHeader(http.StatusUnauthorized)
+		fmt.Println("권한이 없는 요청입니다.")
 		return
 	}
 
-	//유효한 토큰이다. 즉 이미 로그인이 되어 있다.
-	//사용자를 원래 서비스로 되돌려주자. 
-	c.JSON(http.StatusOK, gin.H{
-		"message":"has login cookie",
-	})
+	fmt.Println("유효한 토큰입니다. api에 요청을 보냅니다...")
+	c.Next()
 }
