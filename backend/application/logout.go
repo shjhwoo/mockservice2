@@ -16,7 +16,7 @@ func logoutHandler(c *gin.Context) {
 	fmt.Println("로그아웃 요청이 들어왔습니다")
 	var rw http.ResponseWriter = c.Writer
 	var req *http.Request = c.Request
-	
+
 	data, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		fmt.Println("요청 바디 자체를 확인할 수 없습니다")
@@ -28,7 +28,7 @@ func logoutHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(strings.Split(cookie.Cookie,"; "),"쿠키 값 확인하세요")
+	fmt.Println(strings.Split(cookie.Cookie, "; "), "쿠키 값 확인하세요")
 
 	// cookiename := strings.Split(cookie.Cookie, "=")[0]
 	// if cookiename != "vegasAccessToken" {
@@ -38,9 +38,9 @@ func logoutHandler(c *gin.Context) {
 
 	var tknStr string
 
-	for _, cookieValue := range strings.Split(cookie.Cookie,"; ") {
-		if strings.Split(cookieValue,"=")[0] == "vegasAccessToken" {
-			tknStr = strings.Split(cookieValue,"=")[1]
+	for _, cookieValue := range strings.Split(cookie.Cookie, "; ") {
+		if strings.Split(cookieValue, "=")[0] == "vegasAccessToken" {
+			tknStr = strings.Split(cookieValue, "=")[1]
 		}
 	}
 
@@ -61,7 +61,7 @@ func logoutHandler(c *gin.Context) {
 			return
 		}
 		rw.WriteHeader(http.StatusBadRequest)
-		fmt.Println("아무튼 잘못된 요청",err)
+		fmt.Println("아무튼 잘못된 요청", err)
 		return
 	}
 
@@ -75,10 +75,10 @@ func logoutHandler(c *gin.Context) {
 	//그런 다음에 SSO 세션을 체크하는 url을 사용자에게 되돌려준다.
 	//sso 쿠키가 살아있는지 확인해야지...
 	con := oauth2.Config{
-		ClientID: "vegas",
+		ClientID:     "vegas",
 		ClientSecret: "foobar",
-		RedirectURL: "http://localhost:3006/callback",
-		Scopes: []string{"openid", "offline"},
+		RedirectURL:  "http://localhost:3006/callback",
+		Scopes:       []string{"openid", "offline"},
 		Endpoint: oauth2.Endpoint{
 			TokenURL: "http://localhost:8080/api/oauth2/token",
 			AuthURL:  "http://localhost:8080/",
@@ -88,8 +88,9 @@ func logoutHandler(c *gin.Context) {
 	pkceCodeVerifier := generateCodeVerifier(64)
 	pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
 
-	//1.로그아웃 요청주소
-	ssoLogoutURL := con.AuthCodeURL("nuclear-tuna-plays-piano")+"&nonce=some-random-nonce&code_challenge="+pkceCodeChallenge+"&code_challenge_method=S256&logout=true"
+	//로그아웃 요청
+	ssoLoginURL := con.AuthCodeURL("nuclear-tuna-plays-piano") + "&nonce=some-random-nonce&code_challenge=" + pkceCodeChallenge + "&code_challenge_method=S256&logout=true"
+
 	//이 주소를 다시 프론트로 보내서 리디렉션 시켜줌
 	c.JSON(http.StatusOK, gin.H{
 		"redirectionURL": ssoLogoutURL,

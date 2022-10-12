@@ -10,9 +10,9 @@ func SetupRouter() *gin.Engine {
 
 	router.Use(cors.New(
 		cors.Config{
-			AllowOrigins:   []string{"http://localhost:3006"},
-			AllowMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
-			AllowHeaders:   []string{"Origin", "Accept", "Content-Type", "X-Requested-With","withCredentials"},
+			AllowOrigins:     []string{"http://localhost:3006"},
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Accept", "Content-Type", "X-Requested-With", "withCredentials"},
 			AllowCredentials: true,
 			MaxAge:           0,
 		},
@@ -25,10 +25,10 @@ func SetupRouter() *gin.Engine {
 	router.POST("/callback", callbackHandler)
 	router.POST("/api/chart", checkAcctoken, getchartservice)
 	router.POST("/logout", logoutHandler)
+	router.POST("/slo", sloHandler)
 	router.POST("/checkservicetkn", tokenCheckHandler)
 	// 미들웨어 추가
 	//acctoken과 같이 들어온 요청이 유효한지를 판단하는 미들웨어 작성해야함
 	router.GET("/all", getnormalservice)
 	return router
 }
-

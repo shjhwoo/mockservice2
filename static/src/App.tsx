@@ -4,6 +4,7 @@ import "./App.css";
 import Callback from "./Callback";
 import Main from "./Main";
 import Service from "./Service";
+import SingleLogOut from "./SingleLogOut"
 
 function App() {
   const [accessToken, setAccessToken] = useState<string>("");
@@ -29,6 +30,7 @@ function App() {
           }
         />
         <Route path="/service" element={<Service />} />
+        <Route path="/slo" element={<SingleLogOut />} />
       </Routes>
     </Router>
   );
