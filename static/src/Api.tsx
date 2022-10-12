@@ -10,6 +10,11 @@ interface option {
   headers?: header;
 }
 
+interface token {
+  accessToken: string;
+  refreshToken: string;
+}
+
 class Api {
   constructor() {}
   //권한을 필요로 하는 공통 요청:: withCredentials: true
@@ -55,8 +60,9 @@ class Api {
   }
 
   //서비스 토큰의 유효성을 확인하는 요청
-  async checkServiceToken(accessToken: string, refreshToken: string) {
+  async checkServiceToken(token: token) {
     try {
+      const { accessToken, refreshToken } = token;
       const option = {
         method: "POST",
         url: "http://localhost:4000/checkservicetkn",

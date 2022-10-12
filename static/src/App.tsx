@@ -4,31 +4,23 @@ import "./App.css";
 import Callback from "./Callback";
 import Main from "./Main";
 import Service from "./Service";
-import SingleLogOut from "./SingleLogOut"
+import SingleLogOut from "./SingleLogOut";
+
+interface token {
+  accessToken: string;
+  refreshToken: string;
+}
 
 function App() {
-  const [accessToken, setAccessToken] = useState<string>("");
-  const [refreshToken, setRefreshToken] = useState<string>("");
+  const [token, setToken] = useState<token>({
+    accessToken: "",
+    refreshToken: "",
+  });
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Main accessToken={accessToken} refreshToken={refreshToken} />
-          }
-        />
-        <Route
-          path="/callback"
-          element={
-            <Callback
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-              setAccessToken={setAccessToken}
-              setRefreshToken={setRefreshToken}
-            />
-          }
-        />
+        <Route path="/" element={<Main token={token} />} />
+        <Route path="/callback" element={<Callback token={token} setToken={setToken} />} />
         <Route path="/service" element={<Service />} />
         <Route path="/slo" element={<SingleLogOut />} />
       </Routes>

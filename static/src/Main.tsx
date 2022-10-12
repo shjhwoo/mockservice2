@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./Api";
 
-interface Props {
+interface token {
   accessToken: string;
   refreshToken: string;
+}
+
+interface Props {
+  token: token;
 }
 
 function Main(props: Props) {
@@ -15,10 +19,7 @@ function Main(props: Props) {
     const check = async () => {
       try {
         console.log(props, "물려받은값");
-        const resp = await api.checkServiceToken(
-          props.accessToken,
-          props.refreshToken
-        ); //전역에서 꺼내와~
+        const resp = await api.checkServiceToken(props.token); //전역에서 꺼내와~
         console.log(resp, "??");
         if (resp === undefined) return;
         if (resp.data.message === "SSO 쿠키를 확인합니다") {

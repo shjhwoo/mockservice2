@@ -28,23 +28,7 @@ func logoutHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(strings.Split(cookie.Cookie, "; "), "쿠키 값 확인하세요")
-
-	// cookiename := strings.Split(cookie.Cookie, "=")[0]
-	// if cookiename != "vegasAccessToken" {
-	// 	fmt.Println("베가스 서비스 쿠키가 아닙니다.")
-	// 	return
-	// }
-
-	var tknStr string
-
-	for _, cookieValue := range strings.Split(cookie.Cookie, "; ") {
-		if strings.Split(cookieValue, "=")[0] == "vegasAccessToken" {
-			tknStr = strings.Split(cookieValue, "=")[1]
-		}
-	}
-
-	//tknStr := strings.Split(cookie.Cookie, "=")[1]
+	tknStr := strings.Split(cookie.Cookie, "=")[1]
 
 	fmt.Println("유효한 토큰인지 검증 시작합니다...")
 	claims := &Claims{}
@@ -89,7 +73,7 @@ func logoutHandler(c *gin.Context) {
 	pkceCodeChallenge = generateCodeChallenge(pkceCodeVerifier)
 
 	//로그아웃 요청
-	ssoLoginURL := con.AuthCodeURL("nuclear-tuna-plays-piano") + "&nonce=some-random-nonce&code_challenge=" + pkceCodeChallenge + "&code_challenge_method=S256&logout=true"
+	ssoLogoutURL := con.AuthCodeURL("nuclear-tuna-plays-piano") + "&nonce=some-random-nonce&code_challenge=" + pkceCodeChallenge + "&code_challenge_method=S256&logout=true"
 
 	//이 주소를 다시 프론트로 보내서 리디렉션 시켜줌
 	c.JSON(http.StatusOK, gin.H{
