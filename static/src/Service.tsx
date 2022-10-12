@@ -1,13 +1,24 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-function Service() {
+interface token {
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface Props {
+  token: token;
+}
+
+function Service(props: Props) {
   const [isDoctor, setIsDoctor] = useState<boolean>(false);
   const handleLogout = () => {
     console.log("로그아웃을 요청합니다");
     axios
       .post("http://localhost:4000/logout", {
-        cookie: document.cookie,
+        cookie: document.cookie
+          .split(" ")
+          .filter((item) => item.includes("vegasRefreshToken"))[0],
       })
       .then((response) => {
         console.log(response, "로그아웃 성공 시 돌아오는 응답입니다");
@@ -19,6 +30,7 @@ function Service() {
         window.location.assign(response.data.redirectionURL);
       });
   };
+  console.log("<service/>", props.token);
   useEffect(() => {
     axios
       .post("http://localhost:4000/api/chart", {
@@ -61,9 +73,3 @@ function Service() {
 }
 
 export default Service;
-
-//만약 페이지 자체의 접근 권한을 완전 엄격하게 막고 싶다면 useEffect 써서
-//서비스 쿠키를 보내고,
-//일단 위의 부분은 이따가 생각해ㅠㅠ
-
-//
