@@ -27,17 +27,17 @@ func checkAcctoken(c *gin.Context){
 		fmt.Println("요청 바디 자체를 못 읽었음")
 	}
 
-	var vegasCookie cookie
-	if err := json.Unmarshal(data,&vegasCookie); err != nil {
+	var hanchartCookie cookie
+	if err := json.Unmarshal(data,&hanchartCookie); err != nil {
 		fmt.Println(err,"제이쓴 파싱에 실패했습니다")
 	}
 
-	if vegasCookie.Cookie == "" || vegasCookie.Cookie == "isPKCE=true" {
+	if hanchartCookie.Cookie == "" || hanchartCookie.Cookie == "isPKCE=true" {
 		fmt.Println(err,"베가스 쿠키가 없습니다")
 		con := oauth2.Config{
-			ClientID: "vegas",
+			ClientID: "hanchart",
 			ClientSecret: "foobar",
-			RedirectURL: "http://localhost:3006/callback",
+			RedirectURL: "http://localhost:4006/callback",
 			Scopes: []string{"openid", "offline"},
 			Endpoint: oauth2.Endpoint{
 				TokenURL: "http://localhost:8080/api/oauth2/token",
@@ -60,7 +60,7 @@ func checkAcctoken(c *gin.Context){
 	//쿠키가 존재. jwt 파싱해서 유효한 토큰인지를 확인
 	fmt.Println("액세스 토큰을 파싱하여 검증합니다")
 	var jwtKey = []byte("sercrethatmaycontainch@r$32chars")
-	tknStr := strings.Split(vegasCookie.Cookie,"=")[1]
+	tknStr := strings.Split(hanchartCookie.Cookie,"=")[1]
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil

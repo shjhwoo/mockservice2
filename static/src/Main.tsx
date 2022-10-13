@@ -23,11 +23,11 @@ function Main(props: Props) {
           refreshToken:
             document.cookie
               .split(" ")
-              .filter((cookie) => cookie.includes("vegas"))[0] === undefined
+              .filter((cookie) => cookie.includes("hanchart"))[0] === undefined
               ? ""
               : document.cookie
                   .split(" ")
-                  .filter((cookie) => cookie.includes("vegas"))[0]
+                  .filter((cookie) => cookie.includes("hanchart"))[0]
                   .split("=")[1]
                   .replace(/;| /g, ""),
         });

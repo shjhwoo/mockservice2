@@ -15,9 +15,9 @@ func ssologinHandler(c *gin.Context) {
 	//클라이언트 정보에 따라 통합 로그인 페이지 접속 url을 만들어 준 후 그쪽으로 사용자를 보내준다.
 	//0.클라이언트 설정
 	con := oauth2.Config{
-		ClientID:     "vegas",
+		ClientID:     "hanchart",
 		ClientSecret: "foobar",
-		RedirectURL:  "http://localhost:3006/callback",
+		RedirectURL:  "http://localhost:4006/callback",
 		Scopes:       []string{"openid", "offline"},
 		Endpoint: oauth2.Endpoint{
 			TokenURL: "http://localhost:8080/api/oauth2/token",

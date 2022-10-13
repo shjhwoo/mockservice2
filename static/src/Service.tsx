@@ -17,10 +17,10 @@ function Service(props: Props) {
   const handleLogout = () => {
     console.log("로그아웃을 요청합니다");
     axios
-      .post("http://localhost:4000/logout", {
+      .post("http://localhost:5000/logout", {
         cookie: document.cookie
           .split(" ")
-          .filter((item) => item.includes("vegasRefreshToken"))[0],
+          .filter((item) => item.includes("hanchartRefreshToken"))[0],
       })
       .then((response) => {
         console.log(response, "로그아웃 성공 시 돌아오는 응답입니다");

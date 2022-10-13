@@ -71,7 +71,7 @@ func tokenCheckHandler(c *gin.Context) {
 				"accessToken": string(serviceAccessToken[:]),
 			})
 			return
-			// cookie, err := req.Cookie("vegasRefreshToken");
+			// cookie, err := req.Cookie("hanchartRefreshToken");
 			// if err != nil {
 			// 	fmt.Println(err,"리프레시쿠키검증")
 			// 	if err.Error() == "http: named cookie not present" {

@@ -28,12 +28,12 @@ function Callback(props: Props) {
     const authorizationCode = url.searchParams.get("code");
     if (authorizationCode) {
       return axios
-        .post("http://localhost:4000/callback", { authorizationCode })
+        .post("http://localhost:5000/callback", { authorizationCode })
         .then((res) => {
           const accessToken = res.data.accessToken;
           const refreshToken = document.cookie
             .split(" ")
-            .filter((cookie) => cookie.includes("vegas"))[0]
+            .filter((cookie) => cookie.includes("hanchart"))[0]
             .split("=")[1];
           console.log(accessToken, refreshToken);
           props.setToken({ accessToken, refreshToken });

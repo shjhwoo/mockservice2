@@ -24,9 +24,9 @@ type Claims struct {
 func checksso(c *gin.Context) {
 	//sso 쿠키가 살아있는지 확인해야지...
 	con := oauth2.Config{
-		ClientID: "vegas",
+		ClientID: "hanchart",
 		ClientSecret: "foobar",
-		RedirectURL: "http://localhost:3006/callback",
+		RedirectURL: "http://localhost:4006/callback",
 		Scopes: []string{"openid", "offline"},
 		Endpoint: oauth2.Endpoint{
 			TokenURL: "http://localhost:8080/api/oauth2/token",
@@ -48,7 +48,7 @@ func checksso(c *gin.Context) {
 
 	//아래는 배포 환경에서 쓸 코드임.
 
-	// cookie, err := req.Cookie("vegasAccessToken")
+	// cookie, err := req.Cookie("hanchartAccessToken")
 	// if err != nil {
 	// 	fmt.Println("서비스 쿠키가 없어",err)
 	// 	c.JSON(http.StatusUnauthorized, gin.H{
@@ -64,7 +64,7 @@ func checksso(c *gin.Context) {
 
 	// }
 	
-	// tknStr := strings.Split(vegasCookie.Cookie,"=")[1]
+	// tknStr := strings.Split(hanchartCookie.Cookie,"=")[1]
 	// // tknStr := cookie.Value
 	// fmt.Println(tknStr)
 
