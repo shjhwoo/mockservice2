@@ -27,12 +27,10 @@ func tokenCheckHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println("요청 바디를 읽어오지 못함")
 	}
-
 	var token Token
 	if err := json.Unmarshal(data, &token); err != nil {
 		fmt.Println("제이슨 파싱 실패")
 	}
-
 	fmt.Println(token,"토큰확인")
 
 	//액세스 토큰 검증
