@@ -17,36 +17,33 @@ axios.defaults.withCredentials = true;
 function Callback(props: Props) {
   const navigate = useNavigate();
   useEffect(() => {
-    getToken();
-    navigate("/service", { replace: true });
+    (async () => {
+      await getToken();
+      navigate("/", { replace: true });
+    })();
   }, []);
   const getToken = () => {
     axios.defaults.withCredentials = true;
     const url = new URL(window.location.href);
     const authorizationCode = url.searchParams.get("code");
     if (authorizationCode) {
-      axios
-        .post(
-          "http://localhost:4000/callback",
-          { authorizationCode },
-          { headers: { withCredentials: true } }
-        )
+      return axios
+        .post("http://localhost:4000/callback", { authorizationCode })
         .then((res) => {
           const accessToken = res.data.accessToken;
           const refreshToken = document.cookie
             .split(" ")
-            .filter((cookie) => cookie.includes("vegas"))[0];
+            .filter((cookie) => cookie.includes("vegas"))[0]
+            .split("=")[1];
           console.log(accessToken, refreshToken);
           props.setToken({ accessToken, refreshToken });
+          localStorage.setItem("userid", res.data.userid);
         })
         .catch((err) => {
           console.error(err);
         });
     }
   };
-  useEffect(() => {
-    console.log(props.token);
-  }, [props.token]);
   return (
     <>
       <div>서비스 리디렉션 중입니다...</div>

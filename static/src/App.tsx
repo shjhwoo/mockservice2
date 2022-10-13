@@ -5,6 +5,8 @@ import Callback from "./Callback";
 import Main from "./Main";
 import Service from "./Service";
 import SingleLogOut from "./SingleLogOut";
+import api from "./Api";
+import Nurse from "./Nurse";
 
 interface token {
   accessToken: string;
@@ -25,7 +27,8 @@ function App() {
           element={<Callback token={token} setToken={setToken} />}
         />
         <Route path="/service" element={<Service token={token} />} />
-        <Route path="/slo" element={<SingleLogOut />} />
+        <Route path="/nurse" element={<Nurse token={token} />} />
+        <Route path="/slo" element={<SingleLogOut token={token} />} />
       </Routes>
     </Router>
   );

@@ -22,7 +22,7 @@ type authorizationcode struct {
 func callbackHandler(c *gin.Context) {
 	var rw http.ResponseWriter = c.Writer
 	var req *http.Request = c.Request
-	fmt.Println(req.URL, "토큰은 여기서 받아용")
+	fmt.Println(req.URL, "토큰 발급해줍니다.")
 	//0.클라이언트 설정
 	con := oauth2.Config{
 		ClientID:     "vegas",
@@ -116,12 +116,12 @@ func callbackHandler(c *gin.Context) {
 	var sharedKey = []byte("sercrethatmaycontainch@r$32chars") //환경변수처리.
 	serviceRefreshToken, err := jwt.Sign(jwt.HS256, sharedKey, userinfo, jwt.MaxAge(7*24*60*time.Minute))
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	serviceAccessToken, err := jwt.Sign(jwt.HS256, sharedKey, userinfo, jwt.MaxAge(15*time.Minute))
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
  
 	fmt.Println("베가스 리프레시토큰 확인",string(serviceRefreshToken[:]))

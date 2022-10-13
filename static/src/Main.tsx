@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./Api";
 
@@ -13,14 +13,25 @@ interface Props {
 
 function Main(props: Props) {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState<boolean>(false);
   useEffect(() => {
     //전역에 있는 액세스 토큰 가져와서 바로 서버에 검증 요청을 보냄
     const check = async () => {
       try {
-        console.log(props, "물려받은값");
-        const resp = await api.checkServiceToken(props.token); //전역에서 꺼내와~
-        console.log(resp, "??");
+        console.log("<Main/>", props.token);
+        const resp = await api.checkServiceToken({
+          accessToken: props.token.accessToken,
+          refreshToken:
+            document.cookie
+              .split(" ")
+              .filter((cookie) => cookie.includes("vegas"))[0] === undefined
+              ? ""
+              : document.cookie
+                  .split(" ")
+                  .filter((cookie) => cookie.includes("vegas"))[0]
+                  .split("=")[1]
+                  .replace(/;| /g, ""),
+        });
+        console.log("<Main/>", resp);
         if (resp === undefined) return;
         if (resp.data.message === "SSO 쿠키를 확인합니다") {
           //SSO 세션이 있는지 바로 확인하러 간다. 서비스 토큰이 하나도 없다
@@ -32,9 +43,7 @@ function Main(props: Props) {
           resp.data.message === "유효한 액세스 토큰입니다" ||
           resp.data.message === "액세스 토큰이 만료되어 새로 발급했습니다"
         ) {
-          //SSO 세션이 있는지 바로 확인하러 간다. 서비스 토큰이 하나도 없다
-          console.log("*");
-          setIsLogin(true);
+          console.log("*", resp.data.message);
           navigate("/service", { replace: true });
         }
       } catch (e) {
