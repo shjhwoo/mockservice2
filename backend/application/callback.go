@@ -119,7 +119,7 @@ func callbackHandler(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	serviceAccessToken, err := jwt.Sign(jwt.HS256, sharedKey, userinfo, jwt.MaxAge(2*time.Minute))
+	serviceAccessToken, err := jwt.Sign(jwt.HS256, sharedKey, userinfo, jwt.MaxAge(15*time.Minute))
 	if err != nil {
 		fmt.Println(err)
 	}
