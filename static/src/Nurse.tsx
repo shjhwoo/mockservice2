@@ -1,16 +1,6 @@
 import { Link } from "react-router-dom";
 
-interface token {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface Props {
-  token: token;
-}
-
-function Nurse(props: Props) {
-  console.log(props.token, "<Nurse/>");
+function Nurse() {
   return (
     <>
       <div>간호사 페이지</div>

@@ -1,18 +1,9 @@
 import axios from "axios";
 import { useEffect } from "react";
 
-interface token {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface Props {
-  token: token;
-}
-
 axios.defaults.withCredentials = true;
 
-function SingleLogOut(props: Props) {
+function SingleLogOut() {
   useEffect(() => {
     axios
       .post("http://localhost:5000/slo", {})
