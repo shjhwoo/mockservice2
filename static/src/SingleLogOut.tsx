@@ -1,19 +1,9 @@
 import axios from "axios";
 import { useEffect } from "react";
 
-
-interface token {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface Props {
-  token: token;
-}
-
 axios.defaults.withCredentials = true;
 
-function SingleLogOut(props: Props) {
+function SingleLogOut() {
   useEffect(() => {
     axios
       .post("http://localhost:4000/slo", {})
@@ -21,11 +11,9 @@ function SingleLogOut(props: Props) {
         console.log("서비스 쿠키 파괴 완료.");
         console.log(response);
         window.location.assign(response.data.redirectionURL);
-
       })
       .catch((err) => {
         console.log(err);
-        
       });
   });
   return (

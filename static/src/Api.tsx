@@ -53,7 +53,10 @@ class Api {
             option.headers = { withCredentials: true };
             const response = await axios(option);
             console.log(response, "재요청에 대한 응답");
-            return response;
+            return {
+              response,
+              accessToken: refreshTokenResponse.data.accessToken,
+            };
           }
         } catch (e: any) {
           //리프레시 토큰마저도 무쓸모.. SSO가 있는지 확인하러 가야함

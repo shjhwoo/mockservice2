@@ -1,20 +1,16 @@
-import { useEffect, Dispatch, SetStateAction } from "react";
+import { useEffect } from "react";
+import {
+  SAVE,
+  useSampleState,
+  useSampleDispatch,
+} from "./contexts/MainContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-interface token {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface Props {
-  token: token;
-  setToken: Dispatch<SetStateAction<token>>;
-}
-
 axios.defaults.withCredentials = true;
 
-function Callback(props: Props) {
+function Callback() {
+  const dispatch = useSampleDispatch();
   const navigate = useNavigate();
   useEffect(() => {
     (async () => {
@@ -36,7 +32,8 @@ function Callback(props: Props) {
             .filter((cookie) => cookie.includes("vegas"))[0]
             .split("=")[1];
           console.log(accessToken, refreshToken);
-          props.setToken({ accessToken, refreshToken });
+          //여기서 액세스 토큰의 상태를 갱신하여, 전역에 저장한다
+          dispatch({ type: SAVE, accessToken });
           localStorage.setItem("userid", res.data.userid);
         })
         .catch((err) => {

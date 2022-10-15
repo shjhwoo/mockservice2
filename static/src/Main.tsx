@@ -1,25 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSampleState } from "./contexts/MainContext";
 import api from "./Api";
 
-interface token {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface Props {
-  token: token;
-}
-
-function Main(props: Props) {
+function Main() {
+  const state = useSampleState();
   const navigate = useNavigate();
   useEffect(() => {
     //전역에 있는 액세스 토큰 가져와서 바로 서버에 검증 요청을 보냄
     const check = async () => {
       try {
-        console.log("<Main/>", props.token);
         const resp = await api.checkServiceToken({
-          accessToken: props.token.accessToken,
+          accessToken: state.accessToken,
           refreshToken:
             document.cookie
               .split(" ")

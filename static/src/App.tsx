@@ -1,37 +1,27 @@
-import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Callback from "./Callback";
 import Main from "./Main";
 import Service from "./Service";
 import SingleLogOut from "./SingleLogOut";
-import api from "./Api";
 import Nurse from "./Nurse";
 
-interface token {
-  accessToken: string;
-  refreshToken: string;
-}
+import { TokenProvider } from "./contexts/MainContext"; //반드시 컴포넌트명은 대문자!
 
-function App() {
-  const [token, setToken] = useState<token>({
-    accessToken: "",
-    refreshToken: "",
-  });
+const App: React.FC = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Main token={token} />} />
-        <Route
-          path="/callback"
-          element={<Callback token={token} setToken={setToken} />}
-        />
-        <Route path="/service" element={<Service token={token} />} />
-        <Route path="/nurse" element={<Nurse token={token} />} />
-        <Route path="/slo" element={<SingleLogOut token={token} />} />
-      </Routes>
+      <TokenProvider>
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/callback" element={<Callback />} />
+          <Route path="/service" element={<Service />} />
+          <Route path="/nurse" element={<Nurse />} />
+          <Route path="/slo" element={<SingleLogOut />} />
+        </Routes>
+      </TokenProvider>
     </Router>
   );
-}
+};
 
 export default App;

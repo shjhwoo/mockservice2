@@ -1,18 +1,16 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import {
+  REFRESH,
+  useSampleState,
+  useSampleDispatch,
+} from "./contexts/MainContext";
 import { Link } from "react-router-dom";
 import api from "./Api";
 
-interface token {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface Props {
-  token: token;
-}
-
-function Service(props: Props) {
+function Service() {
+  const state = useSampleState();
+  const dispatch = useSampleDispatch();
   const [chart, setChart] = useState("");
   const handleLogout = () => {
     console.log("로그아웃을 요청합니다");
@@ -32,16 +30,22 @@ function Service(props: Props) {
         window.location.assign(response.data.redirectionURL);
       });
   };
-  console.log("<service/>", props.token);
   const handleChartRequest = () => {
-    console.log(props.token.accessToken, "서비스 요청 보내기 직전에 토큰확인.");
-    api.getChart(props.token.accessToken).then((res) => {
+    api.getChart(state.accessToken).then((res) => {
       console.log("<service/>", res, "차트 요청에 대한 응답입니다.");
+      //만약에 응답이 오긴 했는데 액세스 토큰과 같이 돌아왔으면,토큰 갱신해서 저장!
+      if (res.accessToken) {
+        console.log("액세스 토큰 리프레시된..");
+        dispatch({ type: REFRESH, accessToken: res.accessToken });
+        setChart(res.response.data.message);
+        return;
+      }
       //만약에, 리프레시 토큰마저도 만료되었다면 SSO 세션을 확인하러 가야한다.
       if (typeof res === "string" && res.includes("http://")) {
         alert("서비스 토큰이 만료되었습니다. SSO세션을 확인합니다");
         document.cookie = "isPKCE=true;";
         window.location.replace(res);
+        return;
       } else {
         setChart(res.data.message);
       }
@@ -53,6 +57,7 @@ function Service(props: Props) {
         <div>
           <h1>로그인한 사용자만 볼 수 있는 페이지</h1>
           <section>{chart}</section>
+          <div>{`액세스 토큰 보기::${state.accessToken}`}</div>
           <Link to="/nurse">간호사 페이지로 이동</Link>
           <button onClick={handleChartRequest}>차트정보 받아오기</button>
           <button onClick={handleLogout}>로그아웃</button>
